@@ -37,11 +37,16 @@ class ClockwiseCircle {
         }
     }
 
+    fun remove(delCup: Cup) {
+        delCup.previous?.next = delCup.next
+        delCup.next?.previous = delCup.previous
+    }
+
     override fun toString(): String{
         var str = firstCup?.value.toString()
         var runningPointer = firstCup?.next
 
-        while (runningPointer != currentCup) {
+        while (runningPointer != firstCup) {
             str += runningPointer?.value.toString()
             runningPointer = runningPointer?.next
         }
@@ -54,20 +59,52 @@ var input = File("./day23_input.txt").readText()
 // init the clockwiseCircle
 
 var clockwiseCircle = ClockwiseCircle()
-input.forEach {clockwiseCircle.add(it.toInt())}
+input.forEach {clockwiseCircle.add(it.toString().toInt())}
 
 println(clockwiseCircle.toString())
 
 
 // rotate
+ 
+var currentCup = clockwiseCircle.firstCup
 
-var currentCup = clockwiseCircle!!.firstCup
-var selectedCup1 = currentCup?.next
-var selectedCup2 = selectedCup1?.next
-var selectedCup3 = selectedCup2?.next
+for (i in 1..10)
+{
+    var selectedCup1 = currentCup?.next
+    var selectedCup2 = selectedCup1?.next
+    var selectedCup3 = selectedCup2?.next
 
-var destValue = (currentCup!!.value - 1)
+    clockwiseCircle.remove(selectedCup1!!)
+    clockwiseCircle.remove(selectedCup2!!)
+    clockwiseCircle.remove(selectedCup3!!)
 
-println("hier")
-println(currentCup)
-println(destValue)
+    var destValue = currentCup?.value
+    destValue = destValue?.minus(1)
+
+    while (destValue == selectedCup1?.value || destValue == selectedCup2?.value || destValue == selectedCup3?.value ){
+        destValue = destValue?.minus(1)
+        println(destValue)
+    }
+
+    var runningPointer = clockwiseCircle.firstCup
+
+    runningPointer = runningPointer?.next
+
+    while (runningPointer != clockwiseCircle.firstCup) {
+        if (runningPointer?.value == destValue ) {
+            clockwiseCircle.destinationCup = runningPointer
+        }
+        runningPointer = runningPointer?.next
+    }
+
+    clockwiseCircle.add(selectedCup1?.value!!)
+    clockwiseCircle.destinationCup = clockwiseCircle.destinationCup?.next
+    clockwiseCircle.add(selectedCup2?.value!!)
+    clockwiseCircle.destinationCup = clockwiseCircle.destinationCup?.next
+    clockwiseCircle.add(selectedCup3?.value!!)
+
+
+    println(clockwiseCircle.toString())
+
+    currentCup = currentCup?.next
+}
